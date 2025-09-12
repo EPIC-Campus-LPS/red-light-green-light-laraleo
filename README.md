@@ -4,7 +4,7 @@
 ## Materials
 
 - 1 red and 1 green 5mm LED
-- 2 65 Ω (Ohm) resistors or greater
+- 2 130 Ω (Ohm) resistors or greater
 - 1 1k resistor and 1 2k resistor
 - 12 male-to-male jumper wires
 - HC-SRO4(make sure it has 4 pins!)
