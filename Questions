@@ -1,0 +1,11 @@
+How does the HC-SR04 sensor calculate distance? 
+  The sensor sends a signal to the trigger pin to start measuring and then sends a sound wave out and recieves it, calculating how soon it came back after bouncing off the object. It uses the distance caluclation of D= (c*t)/2 where c is the speed of light.
+
+Why is it important to clean up GPIO pins with GPIO.cleanup() at the end of the program? 
+  Becuase otherwise, the pins can still be active and taking in input or giving output which could be bad for future code. If a pin remains in output mode, it could cause short circuiting as well.  
+  
+How did you calculate whether the object was moving ≥ 1 cm/second? 
+  I first found the distance before as distance_b4 then the distance after which was distance_now, after that i subtracted distance_be4 from distance_now to get ddistance. I did the same thing with time_be4 and time_now to get ttime. Using this I found the speed by doing ddistance/ttime==velocity. If velocity >= 1cm/second, than the object is moving
+
+If your sensor gives you a series of distance readings over time, how can you calculate speed?
+  Compare distance one to distance two, distance two with distance three, and so on and so forth, as well as doing the same with the times. After that, computing each speed (d1-d2/t1-t2) (d2-d3/t3-t4) then taking the average of all the times.
