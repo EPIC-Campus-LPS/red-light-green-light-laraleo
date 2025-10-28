@@ -1,0 +1,74 @@
+import RPi.GPIO as GPIO
+import time
+from datetime import datetime
+GPIO.setmode(GPIO.BOARD)
+
+PIN_TRIGGER = 7
+PIN_ECHO = 11
+NOT_MOVING = 12
+MOVING = 16
+
+GPIO.setup(PIN_TRIGGER, GPIO.OUT)
+GPIO.setup(PIN_ECHO, GPIO.IN)
+GPIO.setup(NOT_MOVING, GPIO.OUT)
+GPIO.setup(MOVING, GPIO.OUT)
+
+GPIO.output(PIN_TRIGGER, GPIO.LOW)
+print ("Waiting for sensor to settle")
+time.sleep(2)
+
+def measure_distance():
+    GPIO.output(PIN_TRIGGER, GPIO.HIGH)
+    time.sleep(0.00001)
+    GPIO.output(PIN_TRIGGER, GPIO.LOW)
+   
+    break_ = time.time() +0.1
+   
+    while GPIO.input(PIN_ECHO)==0:
+        pulse_start_time = time.time()
+        if pulse_start_time > break_:
+            return None
+
+    break_ = time.time() + 0.1
+    while GPIO.input(PIN_ECHO)==1:
+        pulse_end_time= time.time()
+        if time.time()>  break_:
+            return None
+
+    length = pulse_end_time - pulse_start_time
+    distance1 = length*17150
+    return round(distance1, 2)
+
+distance_be4=0.00
+time_be4=0.00
+try:
+    while True:
+        distance_now = measure_distance()
+        time_now = time.time()
+        print ("Calculating Distance...")
+        if distance_now is not None and distance_be4 is not None:
+            ddistance = abs(distance_now - distance_be4)
+            ttime = time_now - time_be4
+            ttime = ttime*(10**-8)
+            if ttime >0.0:
+                velocity = ddistance/ttime
+                print(ddistance)
+                print (ttime)
+                print (velocity)
+                if velocity >=1.0:
+                    print(f"MOVING | Speed: {velocity:.2f} cm/s")
+                    GPIO.output(MOVING, GPIO.HIGH)
+                    GPIO.output(NOT_MOVING, GPIO.LOW)
+                    break
+                else:
+                    print(f"NOT MOVING | Speed: 0.00 cm/s")
+                    GPIO.output(MOVING, GPIO.LOW)
+                    GPIO.output(NOT_MOVING, GPIO.HIGH)
+                    break
+        else:
+            break
+    time_be4 = time_now
+    distance_be4 = distance_now
+    time.sleep(0.10)
+finally:
+    GPIO.cleanup()
